@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "suite": {
+    "id": "haps-v0.4-canonicalization-and-hashing",
+    "sha256": "e49885373ea8ffd4bea4fb662ddacfd194dde7d0001a16a200d55b732daa6474"
+  },
+  "protocol": {
+    "path": "adapter-protocol-v1.md",
+    "id": "haps-conformance-adapter-v1",
+    "sha256": "6b3f618e2118d2dd5bbb690fb157ceaa719de0a3721391225abf6397217e688a"
+  },
+  "runner": {
+    "version": "0.1.0",
+    "sha256": "cbcddf8d8db5cc99b2f471d9632075c6b0e6a2a7cf214a50f14a3750b23f4807"
+  },
+  "haps_version": "0.4",
+  "specification": {
+    "repository": "https://github.com/iProov/HAPS",
+    "commit": "11ed170b3121177d971ea7f66c87981656d03daa",
+    "status": "draft",
+    "provenance_note": "All vendored vector files, including their README, match this specification commit. Suite, runner and protocol documentation are maintained in HAPS-reference. Local digest checks do not authenticate upstream provenance."
+  },
+  "vectors": {
+    "README.md": "192bdc9b5add917b3a669adc87237a90a5d5d207121cd429aec5864eabd4b867",
+    "action-intent.payment.transfer.sample.json": "5a7ecbce097bcefa87b6e7881d636f2b24e42423af5abacdb47b839823dd3a62",
+    "canonicalization-edge-cases.sample.json": "bd5e13ffc32253711c9435d03f155abec4de70bafac613ff4ec5008f37e4a2f1",
+    "consent-credential.otp.sample.json": "21749c348985d3dce30adc32e2c38c7d0f76410047b67c70d307f830c630bb69",
+    "consent-credential.webauthn-uv.sample.json": "5be2193af69eebad87e2587fe022ae396ae505148ccda2a475e1d5298cc831df",
+    "expected_canonicalization_edge_cases_hash.txt": "f73f84351af46a299ff6e5ae462ce5ed0801bd0b442c7b7afa5d2f15e430c04d",
+    "expected_intent_hash.txt": "198d8eda53b4c12dbaa349c9598d5dd86ecc85ee3c807e5318a8e930b2e786c6",
+    "expected_presentation_hash.txt": "8b14e7c388b1fb3471d654321d08ad652575ce2e31248094cd68ebcc7da3a2d7",
+    "haps-challenge.sample.json": "59d767061e4d83a389348eb0d6f1ee9d653ce9cdfa17f0c263316105382c61e7",
+    "haps-digital-credentials-portrait-liveness.sample.json": "dc097617d01faff2e06a3f86c8e35aaab75abeb539ca90b11b40af4886a37f64",
+    "invalid/action-intent.fractional-number.sample.json": "3718b83525619b3e491ca3f5f2926c209fee21f82263c7c9fe087f976f09d5d4",
+    "provider-certification.provider-b.sample.json": "6fcc8f22992262cf207c97ba68a88eb4a511bbcaf3ea8188858896a39c209178",
+    "signing-view.payment.transfer.sample.json": "1f1f312fd89cd87b942f1ffe6801c0ce1e9150868969e6c9fae9fa4119e54dae"
+  }
+}

@@ -1,0 +1,28 @@
+[package]
+name = "haps-canon"
+description = "Experimental partial HAPS canonicalization and strict JSON parsing; not production-ready"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+rust-version.workspace = true
+
+# No library dependencies, to simplify extraction experiments.
+# This crate is a candidate for proof work. Hashing lives in haps-hash.
+[dependencies]
+
+[dev-dependencies]
+# Test-only: the vectors' expected values are hashes, so checking them needs the
+# hash crate. It is not a dependency of the library.
+haps-hash = { path = "../haps-hash" }
+
+[lints.rust]
+unsafe_code = "forbid"
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(kani)'] }
+
+[lints.clippy]
+indexing_slicing = "allow"  # AeneasVerif/aeneas#1319; Kani covers selected helper domains only
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"

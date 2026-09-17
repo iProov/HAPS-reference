@@ -1,0 +1,18 @@
+[package]
+name = "haps-hash"
+description = "Experimental partial HAPS SHA-256 hashing and encoding; not production-ready"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+haps-canon = { path = "../haps-canon" }
+# The hash primitive and its dependencies are outside the proof experiments.
+sha2 = { version = "0.10", default-features = false }
+
+[lints.rust]
+unsafe_code = "forbid"
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(kani)'] }

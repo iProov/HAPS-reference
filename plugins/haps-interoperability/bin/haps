@@ -1,0 +1,99 @@
+#!/usr/bin/env python3
+"""Initialize the pinned HAPS interoperability kit in another repository."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+
+PLUGIN_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PLUGIN_ROOT / "scripts"))
+
+from install_conformance_kit import KitError, check_kit, install_kit  # noqa: E402
+
+
+def plugin_version() -> str:
+    manifest = PLUGIN_ROOT / ".codex-plugin" / "plugin.json"
+    return str(json.loads(manifest.read_text(encoding="utf-8"))["version"])
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="haps",
+        description="Initialize and check the language-neutral HAPS interoperability kit.",
+    )
+    parser.add_argument("--version", action="version", version=plugin_version())
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    init = subparsers.add_parser(
+        "init",
+        help="install the pinned conformance kit without generating an implementation",
+    )
+    init.add_argument(
+        "target",
+        nargs="?",
+        type=Path,
+        default=Path.cwd(),
+        help="target repository (default: current directory)",
+    )
+    init.add_argument(
+        "--update",
+        action="store_true",
+        help="replace a differing installed kit after an explicit suite upgrade",
+    )
+
+    check = subparsers.add_parser("check", help="check an initialized kit for drift")
+    check.add_argument(
+        "target",
+        nargs="?",
+        type=Path,
+        default=Path.cwd(),
+        help="target repository (default: current directory)",
+    )
+    return parser
+
+
+def print_next_steps(destination: Path) -> None:
+    runner = destination / "haps_conformance.py"
+    protocol = destination / "adapter-protocol-v1.md"
+    print("No language implementation was generated.")
+    print("Experimental draft kit; not production-ready. Passing tests does not establish full")
+    print("protocol conformance or that a person saw and approved the correct action.")
+    print("Next:")
+    print(f"  1. Read {protocol}")
+    print("  2. Implement the adapter executable in your chosen language.")
+    print(f"  3. Check local kit digests: python3 {runner} verify-lock")
+    print(
+        f"  4. Test it: python3 {runner} test --adapter <built-adapter>"
+    )
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    try:
+        if args.command == "check":
+            destination, matches = check_kit(PLUGIN_ROOT, args.target)
+            if not matches:
+                print(f"HAPS conformance kit differs or is missing at {destination}", file=sys.stderr)
+                return 1
+            print(f"HAPS conformance kit matches at {destination}")
+            return 0
+
+        destination, changed = install_kit(
+            PLUGIN_ROOT, args.target, update=args.update
+        )
+    except (KitError, OSError) as error:
+        print(f"haps: {error}", file=sys.stderr)
+        return 2
+
+    state = "initialized" if changed else "already current"
+    print(f"HAPS interoperability kit {state} at {destination}")
+    print_next_steps(destination)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

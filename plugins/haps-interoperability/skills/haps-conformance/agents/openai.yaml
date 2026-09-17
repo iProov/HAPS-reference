@@ -1,0 +1,4 @@
+interface:
+  display_name: "Test HAPS Interoperability"
+  short_description: "Run pinned HAPS interoperability tests and add them to CI."
+  default_prompt: "Test this project against the pinned HAPS canonicalization and hashing suite, then add the same test to CI. Explain its experimental status and that passing does not establish full protocol conformance, correct display, or human approval."

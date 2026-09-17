@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "suite_id": "haps-v0.4-canonicalization-and-hashing",
+  "haps_version": "0.4",
+  "adapter_protocol": "haps-conformance-adapter-v1",
+  "scope": "Finite HAPS v0.4 canonicalization, hashing, and malformed-input examples only; not full P1-P3 coverage, HAPS-PP-0.4, HAPS-RP-0.4, PoHP certification, correct display, or human approval",
+  "covered_requirements": [
+    "VEC-01",
+    "VEC-02",
+    "VEC-03",
+    "P1",
+    "P2",
+    "P3"
+  ],
+  "cases": [
+    {
+      "id": "vec-01-intent-hash",
+      "classification": "normative-vector",
+      "input": "action-intent.payment.transfer.sample.json",
+      "variants": ["source", "reversed_compact"],
+      "expect": {
+        "status": "ok",
+        "hash_file": "expected_intent_hash.txt"
+      }
+    },
+    {
+      "id": "vec-01-presentation-hash",
+      "classification": "normative-vector",
+      "input": "signing-view.payment.transfer.sample.json",
+      "variants": ["source", "reversed_compact"],
+      "expect": {
+        "status": "ok",
+        "hash_file": "expected_presentation_hash.txt"
+      }
+    },
+    {
+      "id": "vec-02-edge-canonicalization",
+      "classification": "normative-vector",
+      "input": "canonicalization-edge-cases.sample.json",
+      "variants": ["source", "reversed_compact"],
+      "expect": {
+        "status": "ok",
+        "hash_file": "expected_canonicalization_edge_cases_hash.txt"
+      }
+    },
+    {
+      "id": "vec-03-fractional-number",
+      "classification": "normative-vector",
+      "input": "invalid/action-intent.fractional-number.sample.json",
+      "expect": {
+        "status": "error",
+        "code": "NON_INTEGER_NUMBER"
+      }
+    },
+    {
+      "id": "p3-exponent-number",
+      "classification": "property-check",
+      "document": "{\"n\":1e2}",
+      "expect": {
+        "status": "error",
+        "code": "NON_INTEGER_NUMBER"
+      }
+    },
+    {
+      "id": "p3-duplicate-key",
+      "classification": "property-check",
+      "document": "{\"a\":1,\"a\":2}",
+      "expect": {
+        "status": "error",
+        "code": "DUPLICATE_KEY"
+      }
+    },
+    {
+      "id": "numeric-range",
+      "classification": "property-check",
+      "document": "{\"n\":9007199254740992}",
+      "expect": {
+        "status": "error",
+        "code": "INTEGER_OUT_OF_RANGE"
+      }
+    },
+    {
+      "id": "malformed-trailing-content",
+      "classification": "property-check",
+      "document": "{} {}",
+      "expect": {
+        "status": "error",
+        "code": "TRAILING_CONTENT"
+      }
+    },
+    {
+      "id": "malformed-syntax",
+      "classification": "property-check",
+      "document": "{\"a\":",
+      "expect": {
+        "status": "error",
+        "code": "SYNTAX"
+      }
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+target/
+lean/
+.DS_Store
+verification/.lake/
+__pycache__/
+*.py[cod]

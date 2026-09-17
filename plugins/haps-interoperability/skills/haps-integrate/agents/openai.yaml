@@ -1,0 +1,4 @@
+interface:
+  display_name: "Integrate HAPS"
+  short_description: "Port HAPS canonicalization and hashing into a project."
+  default_prompt: "Integrate experimental HAPS canonicalization and hashing into this project and test it against the pinned kit. Document that it is not production-ready and passing does not establish full protocol conformance, correct display, or human approval."

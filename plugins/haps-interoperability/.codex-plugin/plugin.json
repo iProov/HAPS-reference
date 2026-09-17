@@ -1,0 +1,25 @@
+{
+  "name": "haps-interoperability",
+  "version": "0.2.0",
+  "description": "Port and test experimental HAPS v0.4 canonicalization and hashing across programming languages and CI systems. Not production-ready or full protocol conformance evidence.",
+  "author": {
+    "name": "iProov"
+  },
+  "repository": "https://github.com/iProov/HAPS-reference",
+  "license": "Apache-2.0",
+  "keywords": ["HAPS", "conformance", "interoperability", "canonicalization", "JCS"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "HAPS Interoperability",
+    "shortDescription": "Port experimental HAPS hashing and test pinned vectors.",
+    "longDescription": "Integrate or port the HAPS v0.4 canonicalization and hashing core, expose it through a language-neutral adapter, run pinned vectors locally, and install the same gate in CI. This supports an experimental draft specification and partial reference implementation, not production-ready software. Passing does not establish full protocol conformance or that a person saw and approved the correct action.",
+    "developerName": "iProov",
+    "category": "Developer Tools",
+    "capabilities": ["Write"],
+    "defaultPrompt": [
+      "Add the experimental HAPS interoperability tests to this project and document their limited scope.",
+      "Port experimental HAPS canonicalization to this language and document the remaining limits.",
+      "Check this HAPS adapter and install a CI gate without claiming full protocol conformance or human approval."
+    ]
+  }
+}

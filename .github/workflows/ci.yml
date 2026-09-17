@@ -1,0 +1,126 @@
+name: ci
+
+on:
+  push: { branches: [main] }
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: cargo test --locked --workspace --all-targets
+      - run: cargo clippy --locked --workspace --all-targets -- -D warnings
+      - run: cargo fmt --all --check
+
+  # One job per harness. Running a whole package masks which harness was
+  # reached: a package-level job that is killed part-way reports nothing about
+  # the harnesses that had already completed.
+  kani:
+    name: kani (${{ matrix.harness }})
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.allow-failure == true }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - package: haps-canon
+            harness: canonical_ordering_is_antisymmetric
+          - package: haps-canon
+            harness: int_digits_is_total_over_a_bounded_range
+          - package: haps-hash
+            harness: base64url_alphabet_is_total_and_url_safe
+          # Non-blocking. This harness verifies (0 of 345 failed) but needs
+          # ~11 minutes of solving; the hosted job is killed with SIGTERM about
+          # two minutes in. Peak memory measured locally is 2.9 GB, so the
+          # runner's 7.8 GiB is not a supported explanation, and the reason for
+          # the kill is not established. Its recorded result comes from a
+          # maintainer run; see README.md and docs/verification-toolchain.md.
+          # A kill is neither a counterexample nor a proof, so this job is
+          # allowed to fail rather than reported as a verification failure.
+          - package: haps-canon
+            harness: canonical_ordering_is_transitive
+            allow-failure: true
+    steps:
+      - uses: actions/checkout@v7
+      - name: Report runner resources
+        run: free -h && nproc
+      - uses: model-checking/kani-github-action@v1.1
+        with:
+          kani-version: "0.67.0"
+          args: -p ${{ matrix.package }} --harness ${{ matrix.harness }}
+
+  vectors:
+    # CI checks local vendored digests and the recorded provenance without requiring
+    # credentials for the separate specification repository. Upstream refresh
+    # is an explicit, reviewed maintainer operation; local hashes do not authenticate upstream.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: python3 conformance/haps_conformance.py verify-lock
+
+      - name: vendored vectors name no vendor
+        # Case-insensitive deliberately: the specification claims vendor
+        # neutrality for the vectors, and a case-sensitive grep would miss
+        # spellings such as "iproov". Repository URLs are excluded because
+        # provenance links legitimately name the organisation. Checks the
+        # vendored bytes, so this needs no access to the specification repository.
+        run: |
+          if grep -rIni 'iproov' test_vectors plugins/haps-interoperability/assets/conformance/vectors \
+               | grep -v 'github\.com/iProov'; then
+            echo "::error::vendor name found in a test vector"
+            exit 1
+          fi
+          echo "vectors are vendor-neutral"
+
+  interoperability:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Check README synchronization
+        run: python3 scripts/check_readme_sync.py
+      - name: Verify plugin assets and pinned suite
+        run: |
+          python3 scripts/sync_plugin_conformance.py --check
+          python3 conformance/haps_conformance.py verify-lock
+      - name: Test the language-neutral runner
+        run: python3 -m unittest discover -s conformance/tests -v
+      - name: Test haps init
+        run: python3 -m unittest discover -s plugins/haps-interoperability/tests -v
+      - name: Smoke-test portable plugin initialization
+        run: |
+          plugin_target="$(mktemp -d)"
+          plugins/haps-interoperability/bin/haps init "$plugin_target"
+          python3 "$plugin_target/.haps/conformance/haps_conformance.py" verify-lock
+          plugins/haps-interoperability/bin/haps check "$plugin_target"
+      - name: Build the Rust reference adapter
+        run: cargo build --locked -p haps-reference-adapter
+      - name: Run HAPS interoperability suite
+        run: |
+          python3 conformance/haps_conformance.py test \
+            --adapter target/debug/haps-reference-adapter \
+            --json-report target/haps-conformance.json \
+            --junit-report target/haps-conformance.xml
+      - name: Run independently implemented Python adapter
+        run: |
+          python3 conformance/haps_conformance.py test \
+            --adapter plugins/haps-interoperability/examples/python/haps_adapter.py \
+            --json-report target/haps-conformance-python.json \
+            --junit-report target/haps-conformance-python.xml
+      - name: Upload conformance reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: haps-conformance
+          path: |
+            target/haps-conformance.json
+            target/haps-conformance.xml
+            target/haps-conformance-python.json
+            target/haps-conformance-python.xml

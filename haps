@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+"""Run the HAPS interoperability CLI from this source checkout."""
+
+from pathlib import Path
+import runpy
+
+
+runpy.run_path(
+    Path(__file__).resolve().parent
+    / "plugins"
+    / "haps-interoperability"
+    / "bin"
+    / "haps",
+    run_name="__main__",
+)
