@@ -77,15 +77,17 @@ revision, with wall-clock times and the peak resident set for the longest harnes
 | `int_digits_is_total_over_a_bounded_range` | 0 of 65 failed | SUCCESSFUL | 3 s |
 | `base64url_alphabet_is_total_and_url_safe` | 0 of 49 failed | SUCCESSFUL | 2 s |
 
-**Three of these run in CI; `canonical_ordering_is_transitive` does not.** On a standard hosted runner
-that job is terminated (SIGTERM) roughly two minutes into solving. The harness needs about 11 minutes
-of solving in the measurement above, so the hosted job is cut off well before it could finish. Peak
-memory locally was 2.9 GB, so exhausting the runner's 7.8 GB is **not** a supported explanation, and
-the precise reason the hosted job is killed has not been established. The CI job for this harness is
-therefore marked non-blocking, and the maintainer run above is its authoritative record.
+**Three of these run in CI; `canonical_ordering_is_transitive` does not.** Across three observed runs
+on a standard hosted runner, that job was terminated (SIGTERM, exit 143) during solving without ever
+producing a verdict — twice after about two minutes and once after about seventeen. Symbolic execution
+completes each time and CBMC emits 14,468 verification conditions after simplification; the run dies
+in the solving phase that follows. Peak memory for the maintainer run was 2.9 GB against the runner's
+7.8 GB, so memory exhaustion is not a supported explanation, and the cause has not been established.
+The CI job for this harness is therefore marked non-blocking, and the maintainer run above is its
+authoritative record.
 
-A killed or cancelled run is neither a discovered counterexample nor a successful proof. Do not record
-a result from one; rerun it and name the revision and tool versions, as above.
+A terminated or cancelled run is neither a discovered counterexample nor a successful proof. Do not
+record a result from one; rerun it and name the revision and tool versions, as above.
 
 Property counts are tied to the harnesses, the Kani version and the unwind bounds, and can legitimately
 differ on another toolchain — Kani 0.68.0, for example, reports 332 properties for the transitive

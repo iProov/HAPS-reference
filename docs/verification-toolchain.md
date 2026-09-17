@@ -9,9 +9,10 @@ saw and approved the correct action. See the [implementation limitations](../REA
 
 - The repository contains four Kani harnesses: three in `haps-canon` and one in `haps-hash`.
   CI runs one job per harness. All four verify under Kani 0.67.0, but only three complete on a
-  standard hosted runner. `canonical_ordering_is_transitive` needs roughly 11 minutes of solving
-  and the hosted job is terminated (SIGTERM) about two minutes in, so its CI job is non-blocking
-  and its recorded result comes from a maintainer run instead.
+  standard hosted runner. `canonical_ordering_is_transitive` has never completed there: three runs
+  were terminated (SIGTERM, exit 143) during solving without a verdict, after roughly 2, 2 and 17
+  minutes of solving. Its CI job is therefore non-blocking and its recorded result comes from a
+  maintainer run instead.
 - Reference measurement for that maintainer run, on an Apple M3 (arm64, 16 GB) with Kani 0.67.0 and
   CBMC 6.11.0: antisymmetric 206 s, transitive 657 s, int-digits 3 s, base64url 2 s. Peak resident
   set for the transitive harness was 2.9 GB. Because that is well under the hosted runner's 7.8 GiB,

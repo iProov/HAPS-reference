@@ -33,14 +33,16 @@ jobs:
             harness: int_digits_is_total_over_a_bounded_range
           - package: haps-hash
             harness: base64url_alphabet_is_total_and_url_safe
-          # Non-blocking. This harness verifies (0 of 345 failed) but needs
-          # ~11 minutes of solving; the hosted job is killed with SIGTERM about
-          # two minutes in. Peak memory measured locally is 2.9 GB, so the
-          # runner's 7.8 GiB is not a supported explanation, and the reason for
-          # the kill is not established. Its recorded result comes from a
-          # maintainer run; see README.md and docs/verification-toolchain.md.
-          # A kill is neither a counterexample nor a proof, so this job is
-          # allowed to fail rather than reported as a verification failure.
+          # Non-blocking. This harness verifies under Kani 0.67.0 (0 of 345
+          # failed) but has never completed on a hosted runner: three runs were
+          # terminated with SIGTERM during solving without a verdict, after
+          # ~2, ~2 and ~17 minutes. Peak memory for the maintainer run is
+          # 2.9 GB against the runner's 7.8 GiB, so memory exhaustion is not a
+          # supported explanation and the cause is not established. Its
+          # recorded result comes from a maintainer run; see README.md and
+          # docs/verification-toolchain.md. A termination is neither a
+          # counterexample nor a proof, so this job is allowed to fail rather
+          # than be reported as a verification failure.
           - package: haps-canon
             harness: canonical_ordering_is_transitive
             allow-failure: true
