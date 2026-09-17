@@ -8,8 +8,8 @@ saw and approved the correct action. See the [implementation limitations](../REA
 ## Evidence and reproducibility limits
 
 - The repository contains four Kani harnesses: three in `haps-canon` and one in `haps-hash`.
-  CI runs one job per harness. All four verify under Kani 0.67.0, but only three complete on a
-  standard hosted runner. `canonical_ordering_is_transitive` has never completed there: four attempts
+  CI runs one job per harness for the three it can complete. All four verify under Kani 0.67.0, but
+  only those three complete on a standard hosted runner. `canonical_ordering_is_transitive` has never completed there: four attempts
   were terminated during solving without a verdict, after roughly 2, 2, 17 and 5 minutes, reported
   variously as failure (SIGTERM, exit 143) and as cancellation. It is therefore excluded from CI and
   verified by a recorded maintainer run instead. Treat that as a known gap in automated coverage, and
