@@ -43,8 +43,9 @@ These limitations are already documented:
   consent UI or Signing View derivation pipeline here.
 - The Lean proofs cover two properties of a single comparison step, not whole-string ordering.
 - Kani provides four bounded harnesses, not crate-wide panic freedom. All four verify under the
-  pinned Kani version, but `canonical_ordering_is_transitive` does not complete on a standard
-  hosted runner, so its recorded result comes from a maintainer run rather than from CI.
+  pinned Kani version, but `canonical_ordering_is_transitive` does not complete on a standard hosted
+  runner and is excluded from CI, so its result rests on a recorded maintainer run rather than on
+  automated verification.
 - The Lean proofs are not reproducible from a clone alone and are not a CI gate. See
   [docs/verification-toolchain.md](docs/verification-toolchain.md).
 - `sha2` is assumed correct and is not re-verified.

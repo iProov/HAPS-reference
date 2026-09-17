@@ -22,7 +22,6 @@ jobs:
   kani:
     name: kani (${{ matrix.harness }})
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.allow-failure == true }}
     strategy:
       fail-fast: false
       matrix:
@@ -33,19 +32,19 @@ jobs:
             harness: int_digits_is_total_over_a_bounded_range
           - package: haps-hash
             harness: base64url_alphabet_is_total_and_url_safe
-          # Non-blocking. This harness verifies under Kani 0.67.0 (0 of 345
-          # failed) but has never completed on a hosted runner: three runs were
-          # terminated with SIGTERM during solving without a verdict, after
-          # ~2, ~2 and ~17 minutes. Peak memory for the maintainer run is
+          # canonical_ordering_is_transitive is deliberately absent. It verifies
+          # under Kani 0.67.0 (0 of 345 failed) but has never completed on a
+          # hosted runner: four runs were terminated during solving without a
+          # verdict, after ~2, ~2, ~17 and ~5 minutes, reported variously as
+          # failure and as cancellation. Peak memory for the maintainer run is
           # 2.9 GB against the runner's 7.8 GiB, so memory exhaustion is not a
-          # supported explanation and the cause is not established. Its
-          # recorded result comes from a maintainer run; see README.md and
-          # docs/verification-toolchain.md. A termination is neither a
-          # counterexample nor a proof, so this job is allowed to fail rather
-          # than be reported as a verification failure.
-          - package: haps-canon
-            harness: canonical_ordering_is_transitive
-            allow-failure: true
+          # supported explanation and the cause is not established. Running it
+          # here cannot produce a trustworthy signal, and a cancelled job marks
+          # the whole run cancelled regardless of continue-on-error. It is
+          # verified by a recorded maintainer run instead, and must be rerun and
+          # re-recorded before release; see README.md, SECURITY.md and
+          # docs/verification-toolchain.md. Its absence is a known gap in CI
+          # coverage, not a claim that the harness passes here.
     steps:
       - uses: actions/checkout@v7
       - name: Report runner resources

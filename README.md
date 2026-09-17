@@ -77,14 +77,19 @@ revision, with wall-clock times and the peak resident set for the longest harnes
 | `int_digits_is_total_over_a_bounded_range` | 0 of 65 failed | SUCCESSFUL | 3 s |
 | `base64url_alphabet_is_total_and_url_safe` | 0 of 49 failed | SUCCESSFUL | 2 s |
 
-**Three of these run in CI; `canonical_ordering_is_transitive` does not.** Across three observed runs
-on a standard hosted runner, that job was terminated (SIGTERM, exit 143) during solving without ever
-producing a verdict — twice after about two minutes and once after about seventeen. Symbolic execution
-completes each time and CBMC emits 14,468 verification conditions after simplification; the run dies
-in the solving phase that follows. Peak memory for the maintainer run was 2.9 GB against the runner's
-7.8 GB, so memory exhaustion is not a supported explanation, and the cause has not been established.
-The CI job for this harness is therefore marked non-blocking, and the maintainer run above is its
-authoritative record.
+**Three of these run in CI; `canonical_ordering_is_transitive` is not run there.** Across four
+attempts on a standard hosted runner, that job was terminated during solving without ever producing a
+verdict — after roughly two, two, seventeen and five minutes, reported variously as failure (SIGTERM,
+exit 143) and as cancellation. Symbolic execution completes each time and CBMC emits 14,468
+verification conditions after simplification; the run dies in the solving phase that follows. Peak
+memory for the maintainer run was 2.9 GB against the runner's 7.8 GB, so memory exhaustion is not a
+supported explanation, and the cause has not been established.
+
+Because that job cannot yield a trustworthy signal, it is excluded from CI rather than left to fail,
+and the maintainer run above is its authoritative record. **This is a known gap in automated
+coverage:** transitivity of the canonical ordering is checked only when a maintainer runs the harness
+and records the result, which must be redone on the release revision before any release. It is not
+evidence that the harness passes in CI.
 
 A terminated or cancelled run is neither a discovered counterexample nor a successful proof. Do not
 record a result from one; rerun it and name the revision and tool versions, as above.
